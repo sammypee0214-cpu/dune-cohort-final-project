@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ product.name }}{% endblock %}
+
+{% block content %}
+<h1>Delete product</h1>
+
+<div class="panel form-panel">
+  <p>Are you sure you want to delete <strong>{{ product.name }}</strong>?
+     Past orders keep their line items, but the product will no longer be for sale.
+     This cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="actions">
+      <button type="submit" class="btn btn-danger">Yes, delete</button>
+      <a class="btn btn-secondary" href="{{ product.get_absolute_url }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

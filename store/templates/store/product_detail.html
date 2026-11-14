@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ product.name }}</h1>
+  <a class="btn btn-secondary" href="{% url 'store:product_list' %}">&larr; Back to shop</a>
+</div>
+
+<div class="detail-layout">
+  <div class="panel">
+    {% if product.image %}
+      <img class="detail-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% else %}
+      <div class="card-placeholder">No image uploaded</div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <a class="tag" href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+    <p class="price">${{ product.price|floatformat:2 }}</p>
+    {{ product.description|linebreaks }}
+
+    {% if product.in_stock %}
+      <p><span class="tag ok">{{ product.stock }} in stock</span></p>
+      <form method="post" action="{% url 'orders:cart_add' product.pk %}" class="inline-actions">
+        {% csrf_token %}
+        <input class="qty-input" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+        <button type="submit" class="btn">Add to cart</button>
+      </form>
+    {% else %}
+      <p><span class="tag out">Out of stock</span></p>
+    {% endif %}
+
+    {% if request.user.is_staff %}
+      <div class="actions">
+        <a class="btn btn-secondary" href="{% url 'store:product_update' product.pk %}">Edit</a>
+        <a class="btn btn-danger" href="{% url 'store:product_delete' product.pk %}">Delete</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if related %}
+  <h2>More in {{ product.category.name }}</h2>
+  <div class="grid">
+    {% for item in related %}
+      <article class="card">
+        <div class="card-body">
+          <h3><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></h3>
+          <span class="price">${{ item.price|floatformat:2 }}</span>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
