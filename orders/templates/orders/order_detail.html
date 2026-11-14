@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.pk }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Order #{{ order.pk }}</h1>
+  <a class="btn btn-secondary" href="{% url 'orders:order_list' %}">&larr; My orders</a>
+</div>
+
+<div class="detail-layout">
+  <div class="panel">
+    <h2>Shipping</h2>
+    <p><strong>{{ order.shipping_name }}</strong><br>
+       {{ order.shipping_address|linebreaksbr }}<br>
+       {{ order.phone }}</p>
+    <p class="muted">Placed {{ order.created_at|date:"M d, Y H:i" }}</p>
+    <p>Status: <span class="tag">{{ order.get_status_display }}</span></p>
+  </div>
+
+  <div class="panel">
+    <h2>Items</h2>
+    <table>
+      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        {% for item in order.items.all %}
+          <tr>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.unit_price|floatformat:2 }}</td>
+            <td>${{ item.line_total|floatformat:2 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="totals">Total: ${{ order.total|floatformat:2 }}</p>
+  </div>
+</div>
+{% endblock %}
